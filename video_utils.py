@@ -1,8 +1,10 @@
 import subprocess
+import os
 
-def cut_video(input_file, start_time=0, duration=25, output_file="cut_video.mp4"):
+def cut_video(input_file, start_time=0, duration=25, output_file="cut_video_cut.mp4"):
     """
     Potong video dengan durasi tertentu menggunakan FFmpeg
+    FIX: output file berbeda agar tidak menimpa input
     """
     cmd = [
         "ffmpeg",
