@@ -15,10 +15,10 @@ logger = logging.getLogger(__name__)
 
 # ===== TELEGRAM TOKEN =====
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
-PIXABAY_TOKEN = os.getenv("PIXABAY_TOKEN")  # API key Pixabay
+PIXABAY_API_KEY = os.getenv("PIXABAY_API_KEY")  # API key Pixabay
 
-if not TELEGRAM_TOKEN or not PIXABAY_TOKEN:
-    raise ValueError("TELEGRAM_TOKEN atau PIXABAY_TOKEN belum diset!")
+if not TELEGRAM_TOKEN or not PIXABAY_API_KEY:
+    raise ValueError("TELEGRAM_TOKEN atau PIXABAY_API_KEY belum diset!")
 
 # ===== COMMANDS =====
 def start(update, context):
