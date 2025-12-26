@@ -7,20 +7,16 @@ TOKEN = os.environ.get("TELEGRAM_TOKEN")
 
 def start(update, context):
     update.message.reply_text(
-        "🤖 Bot aktif\n\n"
-        "/status - cek status\n"
-        "/testcut - ambil & potong video"
+        "🤖 Bot aktif\n"
+        "/testcut - ambil & potong video Shorts"
     )
 
-def status(update, context):
-    update.message.reply_text("✅ Bot berjalan normal")
-
 def testcut(update, context):
-    update.message.reply_text("⏳ Mengambil video dari Pixabay...")
+    update.message.reply_text("⏳ Proses video...")
 
     result = get_video()
     if not result:
-        update.message.reply_text("❌ Video tidak ditemukan")
+        update.message.reply_text("❌ Gagal ambil video")
         return
 
     url, keyword = result
@@ -33,19 +29,14 @@ def testcut(update, context):
         return
 
     update.message.reply_text(
-        f"✅ Video siap\n"
-        f"Tema: {keyword}\n"
-        f"Durasi: 20–30 detik"
+        f"✅ Video siap\nTema: {keyword}\nDurasi: 20–30 detik"
     )
 
 def main():
     updater = Updater(TOKEN, use_context=True)
     dp = updater.dispatcher
-
     dp.add_handler(CommandHandler("start", start))
-    dp.add_handler(CommandHandler("status", status))
     dp.add_handler(CommandHandler("testcut", testcut))
-
     updater.start_polling()
     updater.idle()
 
