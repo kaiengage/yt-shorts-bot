@@ -1,48 +1,47 @@
 import os
+import logging
 from telegram.ext import Updater, CommandHandler
-from pixabay import get_video
-from video_utils import download_video, cut_video
 from tts import generate_voice
 
-TOKEN = os.environ.get("TELEGRAM_TOKEN")
+# ===== LOGGING =====
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.INFO
+)
+logger = logging.getLogger(__name__)
+
+# ===== BOT TOKEN =====
+BOT_TOKEN = os.getenv("BOT_TOKEN")  # ambil dari GitHub Secrets
+
+# ===== COMMANDS =====
+def start(update, context):
+    update.message.reply_text(
+        "🤖 Bot aktif!\n\n"
+        "Perintah:\n"
+        "/testtts - test suara AI\n"
+        "/ping - cek bot"
+    )
+
+def ping(update, context):
+    update.message.reply_text("pong")
 
 def testtts(update, context):
     voice, text = generate_voice(lang="en")
     update.message.reply_text(f"🔊 Voice dibuat:\n{text}")
 
-def start(update, context):
-    update.message.reply_text(
-        "🤖 Bot aktif\n"
-        "/testcut - ambil & potong video Shorts"
-    )
-
-def testcut(update, context):
-    update.message.reply_text("⏳ Proses video...")
-
-    result = get_video()
-    if not result:
-        update.message.reply_text("❌ Gagal ambil video")
-        return
-
-    url, keyword = result
-
-    try:
-        download_video(url)
-        cut_video()
-    except Exception as e:
-        update.message.reply_text(f"❌ Error:\n{e}")
-        return
-
-    update.message.reply_text(
-        f"✅ Video siap\nTema: {keyword}\nDurasi: 20–30 detik"
-    )
-
+# ===== MAIN =====
 def main():
-    updater = Updater(TOKEN, use_context=True)
+    if not BOT_TOKEN:
+        raise ValueError("BOT_TOKEN belum di-set di environment!")
+
+    updater = Updater(BOT_TOKEN, use_context=True)
     dp = updater.dispatcher
+
+    # register handlers
     dp.add_handler(CommandHandler("start", start))
-    dp.add_handler(CommandHandler("testcut", testcut))
+    dp.add_handler(CommandHandler("ping", ping))
     dp.add_handler(CommandHandler("testtts", testtts))
+
     updater.start_polling()
     updater.idle()
 
