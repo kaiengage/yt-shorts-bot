@@ -33,7 +33,7 @@ def ping(update, context):
     update.message.reply_text("pong")
 
 def download_pixabay_video(query="nature", filename="cut_video.mp4"):
-    url = f"https://pixabay.com/api/videos/?key={PIXABAY_KEY}&q={query}&per_page=10"
+    url = f"https://pixabay.com/api/videos/?key={PIXABAY_API_KEY}&q={query}&per_page=10"
     res = requests.get(url).json()
     hits = res.get("hits")
     if not hits:
