@@ -13,7 +13,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# ===== TELEGRAM TOKEN =====
+# ===== TOKENS / KEYS =====
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 PIXABAY_API_KEY = os.getenv("PIXABAY_API_KEY")  # API key Pixabay
 
@@ -26,6 +26,7 @@ def start(update, context):
         "🤖 Bot aktif!\n\n"
         "Perintah:\n"
         "/short - buat short otomatis\n"
+        "/sendfinal - kirim short ke Telegram\n"
         "/ping - cek bot"
     )
 
@@ -55,18 +56,30 @@ def create_short(update, context):
         voice_file, _ = generate_voice()
         update.message.reply_text("🎬 Menggabungkan video + suara...")
         final_file = merge_video_audio(cut_file, voice_file)
-        update.message.reply_text(f"✅ Short siap: {final_file}")
+        update.message.reply_text("✅ Short siap! Ketik /sendfinal untuk melihatnya")
     except Exception as e:
         update.message.reply_text(f"❌ Error: {str(e)}")
+
+def send_final(update, context):
+    """
+    Kirim final_short.mp4 ke Telegram
+    """
+    file_path = "final_short.mp4"
+    if os.path.exists(file_path):
+        update.message.reply_video(video=open(file_path, "rb"))
+    else:
+        update.message.reply_text("❌ File final_short.mp4 belum ada. Buat dulu dengan /short")
 
 # ===== MAIN =====
 def main():
     updater = Updater(TELEGRAM_TOKEN, use_context=True)
     dp = updater.dispatcher
 
+    # register handlers
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("ping", ping))
     dp.add_handler(CommandHandler("short", create_short))
+    dp.add_handler(CommandHandler("sendfinal", send_final))
 
     updater.start_polling()
     updater.idle()
