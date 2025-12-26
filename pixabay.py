@@ -7,13 +7,12 @@ PIXABAY_API_KEY = os.environ.get("PIXABAY_API_KEY")
 KEYWORDS = [
     "nature",
     "forest",
-    "waterfall",
-    "sunrise",
-    "sunset",
     "mountain",
     "river",
-    "sky",
-    "beach"
+    "sunset",
+    "sunrise",
+    "beach",
+    "sky"
 ]
 
 def get_video():
@@ -23,22 +22,17 @@ def get_video():
     params = {
         "key": PIXABAY_API_KEY,
         "q": keyword,
-        "per_page": 20,
+        "per_page": 30,
         "safesearch": "true"
     }
 
-    try:
-        r = requests.get(url, params=params, timeout=20)
-        data = r.json()
+    r = requests.get(url, params=params, timeout=20)
+    data = r.json()
 
-        if "hits" not in data or len(data["hits"]) == 0:
-            return None
-
-        video = random.choice(data["hits"])
-        video_url = video["videos"]["small"]["url"]
-
-        return video_url, keyword
-
-    except Exception as e:
-        print("Pixabay error:", e)
+    if "hits" not in data or len(data["hits"]) == 0:
         return None
+
+    video = random.choice(data["hits"])
+    video_url = video["videos"]["small"]["url"]
+
+    return video_url, keyword
