@@ -13,11 +13,10 @@ SENTENCES = [
 ]
 
 def generate_voice(lang="en"):
+    """
+    Generate random TTS voice from SENTENCES list
+    """
     text = random.choice(SENTENCES)
-    tts = gTTS(
-        text=text,
-        lang=lang,
-        slow=False
-    )
+    tts = gTTS(text=text, lang=lang, slow=False)
     tts.save(VOICE_FILE)
     return VOICE_FILE, text
