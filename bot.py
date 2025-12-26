@@ -8,22 +8,24 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     level=logging.INFO
 )
-logger = logging.getLogger(__name__)
 
-# ===== BOT TOKEN =====
-BOT_TOKEN = os.getenv("BOT_TOKEN")  # ambil dari GitHub Secrets
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 # ===== COMMANDS =====
 def start(update, context):
     update.message.reply_text(
         "🤖 Bot aktif!\n\n"
         "Perintah:\n"
-        "/testtts - test suara AI\n"
+        "/testcut - test video\n"
+        "/testtts - test suara\n"
         "/ping - cek bot"
     )
 
 def ping(update, context):
     update.message.reply_text("pong")
+
+def testcut(update, context):
+    update.message.reply_text("🎬 testcut masih aktif")
 
 def testtts(update, context):
     voice, text = generate_voice(lang="en")
@@ -32,14 +34,14 @@ def testtts(update, context):
 # ===== MAIN =====
 def main():
     if not BOT_TOKEN:
-        raise ValueError("BOT_TOKEN belum di-set di environment!")
+        raise ValueError("BOT_TOKEN belum diset")
 
     updater = Updater(BOT_TOKEN, use_context=True)
     dp = updater.dispatcher
 
-    # register handlers
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("ping", ping))
+    dp.add_handler(CommandHandler("testcut", testcut))
     dp.add_handler(CommandHandler("testtts", testtts))
 
     updater.start_polling()
