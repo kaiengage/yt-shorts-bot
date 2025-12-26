@@ -2,8 +2,13 @@ import os
 from telegram.ext import Updater, CommandHandler
 from pixabay import get_video
 from video_utils import download_video, cut_video
+from tts import generate_voice
 
 TOKEN = os.environ.get("TELEGRAM_TOKEN")
+
+def testtts(update, context):
+    voice, text = generate_voice(lang="en")
+    update.message.reply_text(f"🔊 Voice dibuat:\n{text}")
 
 def start(update, context):
     update.message.reply_text(
@@ -37,6 +42,7 @@ def main():
     dp = updater.dispatcher
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("testcut", testcut))
+    dp.add_handler(CommandHandler("testtts", testtts))
     updater.start_polling()
     updater.idle()
 
