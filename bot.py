@@ -9,7 +9,7 @@ logging.basicConfig(
     level=logging.INFO
 )
 
-BOT_TOKEN = os.getenv("BOT_TOKEN")
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 
 # ===== COMMANDS =====
 def start(update, context):
@@ -33,10 +33,10 @@ def testtts(update, context):
 
 # ===== MAIN =====
 def main():
-    if not BOT_TOKEN:
-        raise ValueError("BOT_TOKEN belum diset")
+    if not TELEGRAM_TOKEN:
+        raise ValueError("TELEGRAM_TOKEN belum diset")
 
-    updater = Updater(BOT_TOKEN, use_context=True)
+    updater = Updater(TELEGRAM_TOKEN, use_context=True)
     dp = updater.dispatcher
 
     dp.add_handler(CommandHandler("start", start))
