@@ -1,41 +1,34 @@
-import requests
-import random
 import subprocess
-import os
 
-TEMP_VIDEO = "temp_video.mp4"
-CUT_VIDEO = "cut_video.mp4"
-
-def download_video(url):
-    r = requests.get(url, stream=True, timeout=60)
-    with open(TEMP_VIDEO, "wb") as f:
-        for chunk in r.iter_content(1024 * 1024):
-            if chunk:
-                f.write(chunk)
-
-def cut_video(min_sec=20, max_sec=30):
-    # ambil durasi video
-    cmd_duration = [
-        "ffprobe", "-v", "error",
-        "-show_entries", "format=duration",
-        "-of", "default=noprint_wrappers=1:nokey=1",
-        TEMP_VIDEO
+def cut_video(input_file, start_time=0, duration=25, output_file="cut_video.mp4"):
+    """
+    Potong video dengan durasi tertentu menggunakan FFmpeg
+    """
+    cmd = [
+        "ffmpeg",
+        "-y",
+        "-i", input_file,
+        "-ss", str(start_time),
+        "-t", str(duration),
+        "-c", "copy",
+        output_file
     ]
-    duration = float(subprocess.check_output(cmd_duration).decode().strip())
+    subprocess.run(cmd, check=True)
+    return output_file
 
-    length = random.randint(min_sec, max_sec)
-    start = 0 if duration <= length else random.uniform(0, duration - length)
-
-    cmd_cut = [
-        "ffmpeg", "-y",
-        "-ss", str(start),
-        "-i", TEMP_VIDEO,
-        "-t", str(length),
-        "-vf", "scale=1080:1920",
-        "-r", "24",
-        "-an",
-        CUT_VIDEO
+def merge_video_audio(video_file, audio_file, output_file="final_short.mp4"):
+    """
+    Gabungkan video + audio menjadi satu file mp4
+    """
+    cmd = [
+        "ffmpeg",
+        "-y",
+        "-i", video_file,
+        "-i", audio_file,
+        "-c:v", "copy",
+        "-c:a", "aac",
+        "-shortest",
+        output_file
     ]
-
-    subprocess.run(cmd_cut, check=True)
-    return CUT_VIDEO
+    subprocess.run(cmd, check=True)
+    return output_file
