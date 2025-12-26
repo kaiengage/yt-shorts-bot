@@ -1,7 +1,8 @@
 import requests
 import random
 import os
-from moviepy.editor import VideoFileClip
+from moviepy.video.io.VideoFileClip 
+import VideoFileClip
 
 TEMP_VIDEO = "temp_video.mp4"
 CUT_VIDEO = "cut_video.mp4"
