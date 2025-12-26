@@ -8,8 +8,12 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     level=logging.INFO
 )
+logger = logging.getLogger(__name__)
 
+# ===== TELEGRAM TOKEN =====
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
+if not TELEGRAM_TOKEN:
+    raise ValueError("TELEGRAM_TOKEN belum diset di environment!")
 
 # ===== COMMANDS =====
 def start(update, context):
@@ -17,7 +21,7 @@ def start(update, context):
         "🤖 Bot aktif!\n\n"
         "Perintah:\n"
         "/testcut - test video\n"
-        "/testtts - test suara\n"
+        "/testtts - test suara AI\n"
         "/ping - cek bot"
     )
 
@@ -33,12 +37,10 @@ def testtts(update, context):
 
 # ===== MAIN =====
 def main():
-    if not TELEGRAM_TOKEN:
-        raise ValueError("TELEGRAM_TOKEN belum diset")
-
     updater = Updater(TELEGRAM_TOKEN, use_context=True)
     dp = updater.dispatcher
 
+    # register handlers
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("ping", ping))
     dp.add_handler(CommandHandler("testcut", testcut))
