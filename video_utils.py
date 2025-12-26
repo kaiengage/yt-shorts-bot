@@ -1,6 +1,7 @@
-import random
 import requests
-from moviepy.editor import VideoFileClip
+import random
+import subprocess
+import os
 
 TEMP_VIDEO = "temp_video.mp4"
 CUT_VIDEO = "cut_video.mp4"
@@ -8,33 +9,33 @@ CUT_VIDEO = "cut_video.mp4"
 def download_video(url):
     r = requests.get(url, stream=True, timeout=60)
     with open(TEMP_VIDEO, "wb") as f:
-        for chunk in r.iter_content(chunk_size=1024 * 1024):
+        for chunk in r.iter_content(1024 * 1024):
             if chunk:
                 f.write(chunk)
 
 def cut_video(min_sec=20, max_sec=30):
-    clip = VideoFileClip(TEMP_VIDEO)
-    duration = clip.duration
+    # ambil durasi video
+    cmd_duration = [
+        "ffprobe", "-v", "error",
+        "-show_entries", "format=duration",
+        "-of", "default=noprint_wrappers=1:nokey=1",
+        TEMP_VIDEO
+    ]
+    duration = float(subprocess.check_output(cmd_duration).decode().strip())
 
-    if duration <= max_sec:
-        final = clip
-    else:
-        start = random.uniform(0, duration - max_sec)
-        length = random.uniform(min_sec, max_sec)
-        final = clip.subclip(start, start + length)
+    length = random.randint(min_sec, max_sec)
+    start = 0 if duration <= length else random.uniform(0, duration - length)
 
-    final = final.resize((1080, 1920))
-    final.write_videofile(
-        CUT_VIDEO,
-        fps=24,
-        codec="libx264",
-        audio=False,
-        preset="ultrafast",
-        verbose=False,
-        logger=None
-    )
+    cmd_cut = [
+        "ffmpeg", "-y",
+        "-ss", str(start),
+        "-i", TEMP_VIDEO,
+        "-t", str(length),
+        "-vf", "scale=1080:1920",
+        "-r", "24",
+        "-an",
+        CUT_VIDEO
+    ]
 
-    clip.close()
-    final.close()
-
+    subprocess.run(cmd_cut, check=True)
     return CUT_VIDEO
